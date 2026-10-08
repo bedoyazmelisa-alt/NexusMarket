@@ -40,6 +40,35 @@ public class Cart {
         return cart;
     }
 
+    /**
+     * Rebuilds a cart from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (status, timestamps) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static Cart reconstitute(Long id, Long buyerId, CartStatus status,
+                                    LocalDateTime createdAt, LocalDateTime updatedAt,
+                                    List<CartItem> items) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (buyerId == null) {
+            throw new IllegalArgumentException("BuyerId must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        Cart cart = new Cart();
+        cart.id = id;
+        cart.buyerId = buyerId;
+        cart.status = status;
+        cart.createdAt = createdAt;
+        cart.updatedAt = updatedAt;
+        if (items != null) {
+            cart.items.addAll(items);
+        }
+        return cart;
+    }
+
     public void addItem(Long productId, int quantity, Money unitPrice) {
         requireOpen();
         if (productId == null) {

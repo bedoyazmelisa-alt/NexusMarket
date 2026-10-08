@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.Seller;
 import application.domain.port.out.SellerRepository;
 import org.springframework.stereotype.Repository;
@@ -9,6 +11,7 @@ import java.util.Optional;
 /**
  * In-memory {@link SellerRepository}. Stand-in until the MySQL adapter exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemorySellerRepository extends InMemoryRepository<Seller> implements SellerRepository {
 

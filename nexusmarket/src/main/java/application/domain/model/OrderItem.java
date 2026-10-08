@@ -40,6 +40,32 @@ public class OrderItem {
         return item;
     }
 
+    /**
+     * Rebuilds an order item from persisted data. Unlike {@link #create}, it restores
+     * the stored id and keeps the order reference as given, re-deriving only the
+     * subtotal; used only by persistence adapters to rehydrate the domain.
+     */
+    public static OrderItem reconstitute(Long id, Long orderId, Long productId,
+                                         int quantity, Money unitPrice) {
+        if (productId == null) {
+            throw new IllegalArgumentException("ProductId must not be null");
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+        if (unitPrice == null) {
+            throw new IllegalArgumentException("Unit price must not be null");
+        }
+        OrderItem item = new OrderItem();
+        item.id = id;
+        item.orderId = orderId;
+        item.productId = productId;
+        item.quantity = quantity;
+        item.unitPrice = unitPrice;
+        item.subtotal = unitPrice.multiply(quantity);
+        return item;
+    }
+
     public void assignId(Long id) {
         if (this.id != null) {
             throw new IllegalStateException("Id already assigned");

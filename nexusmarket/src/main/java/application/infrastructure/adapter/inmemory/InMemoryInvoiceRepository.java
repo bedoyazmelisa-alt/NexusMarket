@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.Invoice;
 import application.domain.port.out.InvoiceRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +13,7 @@ import java.util.Optional;
  * exists. No application service consumes invoices yet; the invoicing rules
  * must be defined by requirements first.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryInvoiceRepository extends InMemoryRepository<Invoice> implements InvoiceRepository {
 

@@ -46,6 +46,36 @@ public class Inventory {
         return inventory;
     }
 
+    /**
+     * Rebuilds an inventory from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (quantities, movements, id) and skips creation-time
+     * defaults; used only by persistence adapters to rehydrate the domain.
+     */
+    public static Inventory reconstitute(Long id, Long productId, Long warehouseId,
+                                         int availableQuantity, int reservedQuantity,
+                                         int damagedQuantity, List<InventoryMovement> movements) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (productId == null) {
+            throw new IllegalArgumentException("ProductId must not be null");
+        }
+        if (warehouseId == null) {
+            throw new IllegalArgumentException("WarehouseId must not be null");
+        }
+        Inventory inventory = new Inventory();
+        inventory.id = id;
+        inventory.productId = productId;
+        inventory.warehouseId = warehouseId;
+        inventory.availableQuantity = availableQuantity;
+        inventory.reservedQuantity = reservedQuantity;
+        inventory.damagedQuantity = damagedQuantity;
+        if (movements != null) {
+            inventory.movements.addAll(movements);
+        }
+        return inventory;
+    }
+
     public void increase(int quantity, String reason) {
         if (quantity <= 0) {
             throw new InvalidInventoryMovementException("Quantity must be positive");

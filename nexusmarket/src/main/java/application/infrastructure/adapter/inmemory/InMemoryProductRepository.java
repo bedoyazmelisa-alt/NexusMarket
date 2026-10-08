@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.Product;
 import application.domain.port.out.ProductRepository;
 import application.domain.valueobject.ProductCode;
@@ -12,6 +14,7 @@ import java.util.Optional;
  * In-memory {@link ProductRepository}. Stand-in until the MySQL adapter
  * exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryProductRepository extends InMemoryRepository<Product> implements ProductRepository {
 

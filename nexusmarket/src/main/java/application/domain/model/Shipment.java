@@ -44,6 +44,40 @@ public class Shipment {
         return shipment;
     }
 
+    /**
+     * Rebuilds a shipment from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (dates, status, id) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static Shipment reconstitute(Long id, Long orderId, Long warehouseId,
+                                        TrackingNumber trackingNumber, ShipmentStatus status,
+                                        LocalDateTime shipmentDate, LocalDateTime deliveryDate) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (orderId == null) {
+            throw new IllegalArgumentException("OrderId must not be null");
+        }
+        if (warehouseId == null) {
+            throw new IllegalArgumentException("WarehouseId must not be null");
+        }
+        if (trackingNumber == null) {
+            throw new IllegalArgumentException("Tracking number must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        Shipment shipment = new Shipment();
+        shipment.id = id;
+        shipment.orderId = orderId;
+        shipment.warehouseId = warehouseId;
+        shipment.trackingNumber = trackingNumber;
+        shipment.status = status;
+        shipment.shipmentDate = shipmentDate;
+        shipment.deliveryDate = deliveryDate;
+        return shipment;
+    }
+
     public void prepare() {
         requireStatus(ShipmentStatus.PREPARING, "prepare");
     }

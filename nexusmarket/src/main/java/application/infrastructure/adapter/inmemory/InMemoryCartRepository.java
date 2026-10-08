@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.enums.CartStatus;
 import application.domain.model.Cart;
 import application.domain.port.out.CartRepository;
@@ -10,6 +12,7 @@ import java.util.Optional;
 /**
  * In-memory {@link CartRepository}. Stand-in until the MySQL adapter exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryCartRepository extends InMemoryRepository<Cart> implements CartRepository {
 

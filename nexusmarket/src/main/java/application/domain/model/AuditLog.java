@@ -39,6 +39,33 @@ public class AuditLog {
         return log;
     }
 
+    /**
+     * Rebuilds an audit log from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (timestamp, id) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static AuditLog reconstitute(Long id, Long userId, String action, String entity,
+                                        Long entityId, LocalDateTime timestamp, String details) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (action == null || action.isBlank()) {
+            throw new IllegalArgumentException("Action must not be blank");
+        }
+        if (entity == null || entity.isBlank()) {
+            throw new IllegalArgumentException("Entity must not be blank");
+        }
+        AuditLog log = new AuditLog();
+        log.id = id;
+        log.userId = userId;
+        log.action = action;
+        log.entity = entity;
+        log.entityId = entityId;
+        log.timestamp = timestamp;
+        log.details = details;
+        return log;
+    }
+
     public void assignId(Long id) {
         if (this.id != null) {
             throw new IllegalStateException("Id already assigned");

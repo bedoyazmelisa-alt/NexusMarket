@@ -43,6 +43,39 @@ public class Return {
         return returnRequest;
     }
 
+    /**
+     * Rebuilds a return from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (status, timestamps) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static Return reconstitute(Long id, Long orderId, ReturnStatus status,
+                                      String reason, LocalDateTime createdAt,
+                                      LocalDateTime processedAt, List<ReturnItem> items) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (orderId == null) {
+            throw new IllegalArgumentException("OrderId must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("Reason must not be blank");
+        }
+        Return returnRequest = new Return();
+        returnRequest.id = id;
+        returnRequest.orderId = orderId;
+        returnRequest.status = status;
+        returnRequest.reason = reason;
+        returnRequest.createdAt = createdAt;
+        returnRequest.processedAt = processedAt;
+        if (items != null) {
+            returnRequest.items.addAll(items);
+        }
+        return returnRequest;
+    }
+
     public void addItem(Long productId, int quantity) {
         if (status != ReturnStatus.REQUESTED) {
             throw new InvalidReturnException("Items can only be added to a requested return");

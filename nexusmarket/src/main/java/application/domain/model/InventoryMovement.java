@@ -40,6 +40,33 @@ public class InventoryMovement {
         return movement;
     }
 
+    /**
+     * Rebuilds a movement from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (date, id) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static InventoryMovement reconstitute(Long id, Long inventoryId,
+                                                 InventoryMovementType movementType,
+                                                 int quantity, LocalDateTime date, String reason) {
+        if (movementType == null) {
+            throw new InvalidInventoryMovementException("Movement type must not be null");
+        }
+        if (quantity <= 0) {
+            throw new InvalidInventoryMovementException("Movement quantity must be positive");
+        }
+        if (date == null) {
+            throw new InvalidInventoryMovementException("Movement date must not be null");
+        }
+        InventoryMovement movement = new InventoryMovement();
+        movement.id = id;
+        movement.inventoryId = inventoryId;
+        movement.movementType = movementType;
+        movement.quantity = quantity;
+        movement.date = date;
+        movement.reason = reason;
+        return movement;
+    }
+
     public void assignId(Long id) {
         if (this.id != null) {
             throw new IllegalStateException("Id already assigned");

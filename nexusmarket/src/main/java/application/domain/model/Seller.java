@@ -33,6 +33,33 @@ public class Seller {
         return seller;
     }
 
+    /**
+     * Rebuilds a seller from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (status, id) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static Seller reconstitute(Long id, Long userId, String businessInformation,
+                                      SellerStatus status) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId must not be null");
+        }
+        if (businessInformation == null || businessInformation.isBlank()) {
+            throw new IllegalArgumentException("Business information must not be blank");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        Seller seller = new Seller();
+        seller.id = id;
+        seller.userId = userId;
+        seller.businessInformation = businessInformation.trim();
+        seller.status = status;
+        return seller;
+    }
+
     public void activate() {
         this.status = SellerStatus.ACTIVE;
     }

@@ -49,6 +49,47 @@ public class Invoice {
         return invoice;
     }
 
+    /**
+     * Rebuilds an invoice from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (issue date, total, status, id) and skips creation-time
+     * defaults; used only by persistence adapters to rehydrate the domain.
+     */
+    public static Invoice reconstitute(Long id, Long orderId, InvoiceNumber invoiceNumber,
+                                       LocalDate issueDate, Money subtotal, Money taxes,
+                                       Money total, InvoiceStatus status) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (orderId == null) {
+            throw new IllegalArgumentException("OrderId must not be null");
+        }
+        if (invoiceNumber == null) {
+            throw new IllegalArgumentException("Invoice number must not be null");
+        }
+        if (issueDate == null) {
+            throw new IllegalArgumentException("Issue date must not be null");
+        }
+        if (subtotal == null || taxes == null) {
+            throw new IllegalArgumentException("Subtotal and taxes must not be null");
+        }
+        if (total == null) {
+            throw new IllegalArgumentException("Total must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        Invoice invoice = new Invoice();
+        invoice.id = id;
+        invoice.orderId = orderId;
+        invoice.invoiceNumber = invoiceNumber;
+        invoice.issueDate = issueDate;
+        invoice.subtotal = subtotal;
+        invoice.taxes = taxes;
+        invoice.total = total;
+        invoice.status = status;
+        return invoice;
+    }
+
     public void markAsPaid() {
         if (status == InvoiceStatus.CANCELLED) {
             throw new InvalidOrderStateException("A cancelled invoice cannot be marked as paid");

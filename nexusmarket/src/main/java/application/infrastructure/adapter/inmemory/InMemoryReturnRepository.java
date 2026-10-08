@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.Return;
 import application.domain.port.out.ReturnRepository;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,7 @@ import java.util.Optional;
 /**
  * In-memory {@link ReturnRepository}. Stand-in until the MySQL adapter exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryReturnRepository extends InMemoryRepository<Return> implements ReturnRepository {
 

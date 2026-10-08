@@ -53,6 +53,46 @@ public class Product {
         return product;
     }
 
+    /**
+     * Rebuilds a product from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (status, variants, id) and skips creation-time
+     * defaults; used only by persistence adapters to rehydrate the domain.
+     */
+    public static Product reconstitute(Long id, Long sellerId, String name, String description,
+                                       ProductType productType, ProductStatus status, Money basePrice,
+                                       List<ProductVariant> variants) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (sellerId == null) {
+            throw new IllegalArgumentException("SellerId must not be null");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name must not be blank");
+        }
+        if (productType == null) {
+            throw new IllegalArgumentException("Product type must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        if (basePrice == null) {
+            throw new IllegalArgumentException("Base price must not be null");
+        }
+        Product product = new Product();
+        product.id = id;
+        product.sellerId = sellerId;
+        product.name = name.trim();
+        product.description = description;
+        product.productType = productType;
+        product.status = status;
+        product.basePrice = basePrice;
+        if (variants != null) {
+            product.variants.addAll(variants);
+        }
+        return product;
+    }
+
     public void publish() {
         if (status == ProductStatus.DISCONTINUED) {
             throw new InvalidProductStateException("A discontinued product cannot be published");

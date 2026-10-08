@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.Inventory;
 import application.domain.port.out.InventoryRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +13,7 @@ import java.util.Optional;
  * In-memory {@link InventoryRepository}. Stand-in until the MySQL adapter
  * exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryInventoryRepository extends InMemoryRepository<Inventory> implements InventoryRepository {
 

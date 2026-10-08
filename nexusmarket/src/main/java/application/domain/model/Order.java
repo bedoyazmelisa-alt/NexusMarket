@@ -42,6 +42,41 @@ public class Order {
         return order;
     }
 
+    /**
+     * Rebuilds an order from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (status, total, timestamps, items) and skips
+     * creation-time defaults; used only by persistence adapters to rehydrate the domain.
+     */
+    public static Order reconstitute(Long id, Long buyerId, OrderStatus status, Money totalAmount,
+                                     LocalDateTime createdAt, LocalDateTime updatedAt, List<OrderItem> items) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (buyerId == null) {
+            throw new IllegalArgumentException("BuyerId must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null");
+        }
+        if (createdAt == null) {
+            throw new IllegalArgumentException("CreatedAt must not be null");
+        }
+        if (updatedAt == null) {
+            throw new IllegalArgumentException("UpdatedAt must not be null");
+        }
+        Order order = new Order();
+        order.id = id;
+        order.buyerId = buyerId;
+        order.status = status;
+        order.totalAmount = totalAmount;
+        order.createdAt = createdAt;
+        order.updatedAt = updatedAt;
+        if (items != null) {
+            order.items.addAll(items);
+        }
+        return order;
+    }
+
     public OrderItem addItem(Long productId, int quantity, Money unitPrice) {
         ensureModifiable();
         OrderItem item = OrderItem.create(id, productId, quantity, unitPrice);

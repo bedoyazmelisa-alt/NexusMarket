@@ -1,5 +1,7 @@
 package application.infrastructure.adapter.inmemory;
 
+import org.springframework.context.annotation.Profile;
+
 import application.domain.model.User;
 import application.domain.port.out.UserRepository;
 import application.domain.valueobject.Email;
@@ -10,6 +12,7 @@ import java.util.Optional;
 /**
  * In-memory {@link UserRepository}. Stand-in until the MySQL adapter exists.
  */
+@Profile("in-memory")
 @Repository
 public class InMemoryUserRepository extends InMemoryRepository<User> implements UserRepository {
 

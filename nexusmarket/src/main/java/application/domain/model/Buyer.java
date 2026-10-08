@@ -38,6 +38,36 @@ public class Buyer {
         return buyer;
     }
 
+    /**
+     * Rebuilds a buyer from persisted data. Unlike {@link #create}, it preserves
+     * the stored state exactly (commercial status, id) and skips creation-time defaults;
+     * used only by persistence adapters to rehydrate the domain.
+     */
+    public static Buyer reconstitute(Long id, Long userId, Address primaryAddress,
+                                     List<Address> additionalAddresses, BuyerStatus commercialStatus) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id must not be null");
+        }
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId must not be null");
+        }
+        if (primaryAddress == null) {
+            throw new IllegalArgumentException("Primary address must not be null");
+        }
+        if (commercialStatus == null) {
+            throw new IllegalArgumentException("Commercial status must not be null");
+        }
+        Buyer buyer = new Buyer();
+        buyer.id = id;
+        buyer.userId = userId;
+        buyer.primaryAddress = primaryAddress;
+        buyer.commercialStatus = commercialStatus;
+        if (additionalAddresses != null) {
+            buyer.additionalAddresses.addAll(additionalAddresses);
+        }
+        return buyer;
+    }
+
     public void addAddress(Address address) {
         if (address == null) {
             throw new IllegalArgumentException("Address must not be null");
