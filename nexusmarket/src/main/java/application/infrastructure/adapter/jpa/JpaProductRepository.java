@@ -6,10 +6,11 @@ import application.domain.port.out.ProductRepository;
 import application.domain.valueobject.Money;
 import application.domain.valueobject.ProductCode;
 import application.infrastructure.adapter.jpa.entity.ProductEntity;
-import application.infrastructure.adapter.jpa.entity.ProductVariantEmbeddable;
+import application.infrastructure.adapter.jpa.entity.ProductVariantEntity;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,14 @@ public class JpaProductRepository implements ProductRepository {
         entity.setStatus(product.getStatus());
         entity.setBasePriceAmount(product.getBasePrice().getAmount());
         entity.setBasePriceCurrency(product.getBasePrice().getCurrency());
-        entity.setVariants(product.getVariants().stream().map(this::toEmbeddable).toList());
+        List<ProductVariantEntity> variantEntities = new ArrayList<>();
+        int position = 0;
+        for (ProductVariant variant : product.getVariants()) {
+            ProductVariantEntity variantEntity = toVariantEntity(variant);
+            variantEntity.setPosition(position++);
+            variantEntities.add(variantEntity);
+        }
+        entity.setVariants(variantEntities);
         return entity;
     }
 
@@ -94,24 +102,24 @@ public class JpaProductRepository implements ProductRepository {
                 variants);
     }
 
-    private ProductVariantEmbeddable toEmbeddable(ProductVariant variant) {
-        ProductVariantEmbeddable embeddable = new ProductVariantEmbeddable();
-        embeddable.setId(variant.getId());
-        embeddable.setName(variant.getName());
-        embeddable.setAttributes(new LinkedHashMap<>(variant.getAttributes()));
-        embeddable.setPriceAmount(variant.getPrice().getAmount());
-        embeddable.setPriceCurrency(variant.getPrice().getCurrency());
-        embeddable.setStatus(variant.getStatus());
-        return embeddable;
+    private ProductVariantEntity toVariantEntity(ProductVariant variant) {
+        ProductVariantEntity variantEntity = new ProductVariantEntity();
+        variantEntity.setId(variant.getId());
+        variantEntity.setName(variant.getName());
+        variantEntity.setAttributes(new LinkedHashMap<>(variant.getAttributes()));
+        variantEntity.setPriceAmount(variant.getPrice().getAmount());
+        variantEntity.setPriceCurrency(variant.getPrice().getCurrency());
+        variantEntity.setStatus(variant.getStatus());
+        return variantEntity;
     }
 
-    private ProductVariant toVariantDomain(ProductVariantEmbeddable embeddable, Long productId) {
+    private ProductVariant toVariantDomain(ProductVariantEntity variantEntity, Long productId) {
         return ProductVariant.reconstitute(
-                embeddable.getId(),
+                variantEntity.getId(),
                 productId,
-                embeddable.getName(),
-                embeddable.getAttributes(),
-                Money.of(embeddable.getPriceAmount(), embeddable.getPriceCurrency()),
-                embeddable.getStatus());
+                variantEntity.getName(),
+                variantEntity.getAttributes(),
+                Money.of(variantEntity.getPriceAmount(), variantEntity.getPriceCurrency()),
+                variantEntity.getStatus());
     }
 }

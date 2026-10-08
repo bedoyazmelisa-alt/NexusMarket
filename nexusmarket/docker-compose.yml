@@ -7,7 +7,9 @@ services:
       MYSQL_PASSWORD: nexusmarket
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      # 3307 on the host to avoid clashing with a local MySQL service; the app
+      # container connects through the compose network (mysql:3306).
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:

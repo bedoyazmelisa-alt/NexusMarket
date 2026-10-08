@@ -4,11 +4,15 @@ import application.domain.enums.ProductStatus;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,24 +21,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Persistence model for {@code ProductVariant}. Value part of the product
- * aggregate, stored through an element collection; the owning product id lives
- * in the collection's join column, so it is not repeated here.
+ * Persistence model for a product variant. Kept as an entity (not an embeddable)
+ * because its attribute map must be an {@code @ElementCollection}, which is only
+ * legal on entities; the owning product id is written through the association.
  */
-@Embeddable
+@Entity
+@Table(name = "products_variants")
 @Getter
 @Setter
-public class ProductVariantEmbeddable {
+public class ProductVariantEntity {
 
-    @Column(name = "variant_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Written by the owning ProductEntity association; read back for reconstitution.
+    @Column(name = "product_id", insertable = false, updatable = false)
+    private Long productId;
 
     @Column(nullable = false, length = 200)
     private String name;
 
     @ElementCollection
     @CollectionTable(name = "product_variant_attributes",
-            joinColumns = @JoinColumn(name = "variant_ref"))
+            joinColumns = @JoinColumn(name = "variant_id"))
     @MapKeyColumn(name = "attribute_key", nullable = false, length = 100)
     @Column(name = "attribute_value", nullable = false, length = 500)
     private Map<String, String> attributes = new LinkedHashMap<>();
@@ -48,4 +58,8 @@ public class ProductVariantEmbeddable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ProductStatus status;
+
+    /** List order within the owning product (managed by the adapter). */
+    @Column(name = "position")
+    private Integer position;
 }
