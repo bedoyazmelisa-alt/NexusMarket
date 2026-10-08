@@ -1,0 +1,31 @@
+package application.infrastructure.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+
+/**
+ * Stateless security for the REST API. Reporting endpoints are restricted to
+ * the admin role (HTTP Basic); the rest of the API is open — the domain has
+ * no credential model yet, so authentication beyond admin is out of scope.
+ */
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/reports/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
+}
